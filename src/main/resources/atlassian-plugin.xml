@@ -1,0 +1,32 @@
+<atlassian-plugin key="${project.groupId}.${project.artifactId}" name="${project.name}" plugins-version="2">
+    <plugin-info>
+        <description>${project.description}</description>
+        <version>${project.version}</version>
+        <vendor name="${project.organization.name}" url="${project.organization.url}" />
+        <param name="plugin-icon">images/icon.png</param>
+        <param name="plugin-logo">images/pluginLogo.png</param>
+    </plugin-info>
+
+    <!-- add our i18n resource -->
+    <resource type="i18n" name="i18n" location="advanced-cloner"/>
+
+    <web-item name="mail_ru_multiple_cloner_webitem" key="advanced-cloner" section="operations-operations" weight="1000">
+        <description key="advanced-cloner.description"/>
+        <label key="advanced-cloner.label"/>
+        <link linkId="mail_ru_advanced_cloner_webitem">/secure/IssueClonerWithCount!default.jspa?id=${issueId}</link>
+        <styleClass>aui-list-item-link opsbar-operations</styleClass>
+    </web-item>
+
+    <webwork1 key="mail_ru_multiple_cloner_webwork1" name="Multiple clone issues" class="java.lang.Object">
+        <actions>
+            <action name="ru.mail.jira.plugins.IssueClonerWithCount" alias="IssueClonerWithCount">
+                <view name="input">/templates/cloneformview.vm</view>
+                <view name="error">/templates/cloneformview.vm</view>
+            </action>
+        </actions>
+    </webwork1>
+
+    <!-- import from the product container -->
+    <component-import key="pluginSettingsFactory" interface="com.atlassian.sal.api.pluginsettings.PluginSettingsFactory"/>
+    <component-import key="applicationProperties" interface="com.atlassian.sal.api.ApplicationProperties" />
+</atlassian-plugin>
