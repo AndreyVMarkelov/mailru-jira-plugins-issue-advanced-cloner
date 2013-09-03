@@ -21,30 +21,37 @@
         </div>
         #end
         <h2>$action.getText("advanced-cloner.confirm")</h2><br/>
-        <form class="aui" onsubmit="if (this.submitted) return false; this.submitted = true; return true"
-              name="jiraform" method="post" action="IssueClonerWithCount.jspa">
-            <input type="hidden" name="atl_token" value="$atl_token"/>
-            <input type="hidden" name="id" value="$action.getIssueObject().getId()"/>
-            <div class="field-group">
-                <label for="selectedGroups">$action.getText("advanced-cloner.newname")<span class="aui-icon icon-required"></span></label>
-                <input type="text" id="newName" name="newName" value="${newName}"/>
-            </div>
-            <div class="field-group">
-                <label for="selectedGroups">$action.getText("advanced-cloner.issuecount")<span class="aui-icon icon-required"></span></label>
-                <input type="text" id="issueCount" name="issueCount" value="${issueCount}"/>
-            </div>
-            <div class="field-group">
-                <label for="cloneLinks">$action.getText("advanced-cloner.withLinks")</label>
-                <input type="checkbox" id="cloneLinks" name="cloneLinks" value="true" #if(${cloneLinks})checked="checked"#end/>
-            </div>
-            <div class="field-group">
-                <label for="cloneAttachments">$action.getText("advanced-cloner.withAttachments")</label>
-                <input type="checkbox" id="cloneAttachments" name="cloneAttachments" #if(${cloneAttachments})checked="checked"#end value="true"/>
-            </div>
-            <div class="buttons-container">
-                <div class="buttons">
-                    <input class="button submit" type="submit" name="add" value="$action.getText("common.words.yes")" accesskey="S" title="Press Alt+Shift+S to submit form"/>
-                    <input class="button submit" id="cancelButton" type="button" accesskey="`" title="Cancel (Alt+Shift + `)" name="Cancel" value="${action.getText('common.words.cancel')}" onclick="location.href='${baseUrl}/browse/${action.getIssueObject().getKey()}';"/>
+        <form class="aui" name="jiraform" method="post" action="IssueClonerWithCount.jspa">
+            <div class="form-body">
+                <div class="hidden">
+                    <input type="hidden" name="atl_token" value="$atl_token"/>
+                    <input type="hidden" name="id" value="$action.getIssueObject().getId()"/>
+                </div>
+                <div class="field-group">
+                    <label for="selectedGroups">$action.getText("advanced-cloner.newname")<span class="aui-icon icon-required"></span></label>
+                    <input type="text" class="text long-field" id="newName" name="newName" value="${newName}"/>
+                </div>
+                <div class="field-group">
+                    <label for="selectedGroups">$action.getText("advanced-cloner.issuecount")<span class="aui-icon icon-required"></span></label>
+                    <input type="text" id="issueCount" name="issueCount" value="${issueCount}"/>
+                </div>
+                <div class="field-group">
+                    <label for="cloneLinks">$action.getText("advanced-cloner.withLinks")</label>
+                    <input type="checkbox" id="cloneLinks" name="cloneLinks" value="true" #if(${cloneLinks})checked="checked"#end/>
+                </div>
+                <div class="field-group">
+                    <label for="cloneAttachments">$action.getText("advanced-cloner.withAttachments")</label>
+                    <input type="checkbox" id="cloneAttachments" name="cloneAttachments" #if(${cloneAttachments})checked="checked"#end value="true"/>
+                </div>
+                <div class="field-group">
+                    <label for="cloneWatchers">$action.getText("advanced-cloner.withWatchers")</label>
+                    <input type="checkbox" id="cloneWatchers" name="cloneWatchers" #if(${cloneWatchers})checked="checked"#end value="true"/>
+                </div>
+                <div class="buttons-container form-footer">
+                    <div class="buttons">
+                        <input class="button submit" type="submit" name="add" value="$action.getText("common.words.yes")" accesskey="S" title="Press Alt+Shift+S to submit form"/>
+                        <input class="button submit" id="cancelButton" type="button" accesskey="`" title="Cancel (Alt+Shift + `)" name="Cancel" value="${action.getText('common.words.cancel')}" onclick="location.href='${baseUrl}/browse/${action.getIssueObject().getKey()}';"/>
+                    </div>
                 </div>
             </div>
         </form>

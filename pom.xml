@@ -5,13 +5,13 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
     <modelVersion>4.0.0</modelVersion>
-    <groupId>ru.mail.jira.plugins</groupId>
+    <groupId>ru.andreymarkelov.atlas.plugins</groupId>
     <artifactId>multiple-cloner</artifactId>
     <version>1.0</version>
 
     <organization>
-        <name>Andrey Markelov|Mail.Ru Group</name>
-        <url>http://corp.mail.ru</url>
+        <name>Andrey Markelov</name>
+        <url>http://ru.linkedin.com/in/andreymarkelov/</url>
     </organization>
 
     <name>multiple-cloner</name>
@@ -73,7 +73,7 @@
     </build>
 
     <properties>
-        <jira.version>5.0</jira.version>
+        <jira.version>5.2.8</jira.version>
         <amps.version>4.0</amps.version>
         <useFastdevCli>false</useFastdevCli>
     </properties>
