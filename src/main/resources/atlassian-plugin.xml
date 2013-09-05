@@ -13,6 +13,7 @@
     <web-item name="andreymarkelov_multiple_cloner_webitem" key="advanced-cloner" section="operations-operations" weight="1000">
         <description key="advanced-cloner.description"/>
         <label key="advanced-cloner.label"/>
+        <condition class="ru.andreymarkelov.atlas.plugins.advcloner.IssueCloneCondition"/>
         <link linkId="andreymarkelov_advanced_cloner_webitem">/secure/IssueClonerWithCount!default.jspa?id=${issueId}</link>
         <styleClass>trigger-dialog</styleClass>
     </web-item>

@@ -16,12 +16,11 @@ import java.util.Set;
 import org.ofbiz.core.entity.GenericValue;
 
 import com.atlassian.crowd.embedded.api.User;
-import com.atlassian.jira.ComponentManager;
 import com.atlassian.jira.bc.issue.IssueService;
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.config.SubTaskManager;
 import com.atlassian.jira.config.properties.APKeys;
-import com.atlassian.jira.config.properties.ApplicationProperties;
+import com.atlassian.sal.api.ApplicationProperties;
 import com.atlassian.jira.exception.CreateException;
 import com.atlassian.jira.issue.AttachmentManager;
 import com.atlassian.jira.issue.Issue;
@@ -53,17 +52,12 @@ import com.opensymphony.util.TextUtils;
  * @author Andrey Markelov
  */
 public class IssueClonerWithCount extends AbstractViewIssue {
-    private String[] fields =
-    {
-        //"10302", "10303", "10304", "10305", "10306", "10307", "10707", "10708"
-    };
-
     /**
      * Unique ID.
      */
     private static final long serialVersionUID = -7013122116781342738L;
 
-    private final ApplicationProperties applicationProperties;
+    private final JiraVersion jiraVersion;
     private final PermissionManager permissionManager;
     private final IssueLinkManager issueLinkManager;
     private final RemoteIssueLinkManager remoteIssueLinkManager;
@@ -73,12 +67,15 @@ public class IssueClonerWithCount extends AbstractViewIssue {
     private final IssueManager issueManager;
     private final WatcherManager watcherManager;
     private IssueLinkType cloneIssueLinkType;
+
     private String cloneIssueLinkTypeName;
     private boolean cloneLinks;
     private boolean cloneAttachments;
     private boolean cloneWatchers;
+    private boolean cloneComments;
     private String issueCount;
     private String newName;
+    private String[] fields;
     private final Map<Long, Long> newIssueIdMap = new HashMap<Long, Long>();
 
     public IssueClonerWithCount(
@@ -95,7 +92,7 @@ public class IssueClonerWithCount extends AbstractViewIssue {
             WatcherManager watcherManager) {
         super(subTaskManager);
         this.permissionManager = permissionManager;
-        this.applicationProperties = applicationProperties;
+        this.jiraVersion = new JiraVersion(applicationProperties);
         this.issueLinkManager = issueLinkManager;
         this.remoteIssueLinkManager = remoteIssueLinkManager;
         this.issueLinkTypeManager = issueLinkTypeManager;
@@ -188,6 +185,8 @@ public class IssueClonerWithCount extends AbstractViewIssue {
 
     @Override
     public String doDefault() throws Exception {
+        ComponentAccessor.getCustomFieldManager().getCustomFieldObjects(getIssueObject());
+
         this.cloneLinks = false;
         this.cloneAttachments = false;
         this.issueCount = "1";
@@ -235,10 +234,9 @@ public class IssueClonerWithCount extends AbstractViewIssue {
      */
     protected String doPostCreationTasks(List<Issue> newIssues) throws Exception {
         if (newIssues.size() > 0) {
-            
-            return returnCompleteWithInlineRedirect("/browse/" + newIssues.get(newIssues.size() - 1).getKey());
+            return redirect("/browse/" + newIssues.get(newIssues.size() - 1).getKey());
         } else {
-            return returnCompleteWithInlineRedirect("/browse/" + getIssueObject().getKey());
+            return redirect("/browse/" + getIssueObject().getKey());
         }
     }
 
@@ -277,7 +275,7 @@ public class IssueClonerWithCount extends AbstractViewIssue {
      * Get context path.
      */
     public String getBaseUrl() {
-        return applicationProperties.getDefaultBackedString(APKeys.JIRA_BASEURL);
+        return ComponentAccessor.getApplicationProperties().getDefaultBackedString(APKeys.JIRA_BASEURL);
     }
 
     /**
@@ -309,7 +307,7 @@ public class IssueClonerWithCount extends AbstractViewIssue {
      */
     public String getCloneLinkTypeName() {
         if (cloneIssueLinkTypeName == null) {
-            cloneIssueLinkTypeName = applicationProperties.getDefaultBackedString(APKeys.JIRA_CLONE_LINKTYPE_NAME);
+            cloneIssueLinkTypeName = ComponentAccessor.getApplicationProperties().getDefaultBackedString(APKeys.JIRA_CLONE_LINKTYPE_NAME);
         }
         return cloneIssueLinkTypeName;
     }
@@ -318,15 +316,19 @@ public class IssueClonerWithCount extends AbstractViewIssue {
      * Get clone prefix.
      */
     public String getClonePrefix() {
-        String clonePrefixProperties = applicationProperties.getDefaultBackedString(APKeys.JIRA_CLONE_PREFIX);
+        String clonePrefixProperties = ComponentAccessor.getApplicationProperties().getDefaultBackedString(APKeys.JIRA_CLONE_PREFIX);
         return clonePrefixProperties + (Strings.isNullOrEmpty(clonePrefixProperties) ? "" : " ");
     }
 
     /**
      * Get custom fields of issue.
      */
-    public List<CustomField> getCustomFields(Issue issue) {
-        return getCustomFieldManager().getCustomFieldObjects(issue.getProjectObject().getId(), issue.getIssueTypeObject().getId());
+    public List<CustomField> getCustomFields() {
+        return getCustomFieldManager().getCustomFieldObjects(getIssueObject().getProjectObject().getId(), getIssueObject().getIssueTypeObject().getId());
+    }
+
+    public String[] getFields() {
+        return fields;
     }
 
     public String getIssueCount() {
@@ -335,6 +337,10 @@ public class IssueClonerWithCount extends AbstractViewIssue {
 
     public Issue getIssueObject(GenericValue genericValue) {
         return issueFactory.getIssue(genericValue);
+    }
+
+    public JiraVersion getJiraVersion() {
+        return jiraVersion;
     }
 
     public String getNewName() {
@@ -363,6 +369,10 @@ public class IssueClonerWithCount extends AbstractViewIssue {
         return cloneAttachments;
     }
 
+    public boolean isCloneComments() {
+        return cloneComments;
+    }
+
     public boolean isCloneLinks() {
         return cloneLinks;
     }
@@ -371,8 +381,16 @@ public class IssueClonerWithCount extends AbstractViewIssue {
         return cloneWatchers;
     }
 
+    private String redirect(String path) {
+        return returnCompleteWithInlineRedirect(path);
+    }
+
     public void setCloneAttachments(boolean cloneAttachments) {
         this.cloneAttachments = cloneAttachments;
+    }
+
+    public void setCloneComments(boolean cloneComments) {
+        this.cloneComments = cloneComments;
     }
 
     public void setCloneLinks(boolean cloneLinks) {
@@ -408,11 +426,11 @@ public class IssueClonerWithCount extends AbstractViewIssue {
             getIssueObject().setReporter(getLoggedInUser());
         }
 
-        List<CustomField> customFields = getCustomFields(originalIssue);
+        List<CustomField> customFields = getCustomFields();
         for (Iterator<CustomField> iterator = customFields.iterator(); iterator.hasNext();) {
             CustomField customField = (CustomField) iterator.next();
 
-            if (Arrays.binarySearch(fields, customField.getIdAsLong().toString()) >= 0) {
+            if (Arrays.binarySearch(fields, customField.getId()) < 0) {
                 continue;
             }
 
@@ -421,6 +439,10 @@ public class IssueClonerWithCount extends AbstractViewIssue {
                 newIssue.setCustomFieldValue(customField, value);
             }
         }
+    }
+
+    public void setFields(String[] fields) {
+        this.fields = fields;
     }
 
     public void setIssueCount(String issueCount) {

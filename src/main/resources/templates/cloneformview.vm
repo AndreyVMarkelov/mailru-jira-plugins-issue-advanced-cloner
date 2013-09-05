@@ -47,10 +47,20 @@
                     <label for="cloneWatchers">$action.getText("advanced-cloner.withWatchers")</label>
                     <input type="checkbox" id="cloneWatchers" name="cloneWatchers" #if(${cloneWatchers})checked="checked"#end value="true"/>
                 </div>
+                #if($action.getCustomFields().size() > 0)
+                <div class="field-group">
+                    <label for="fields">$action.getText("advanced-cloner.customfields")</label>
+                    <select id="fields" name="fields" multiple="multiple" size="5">
+                        #foreach($field in $action.getCustomFields())
+                        <option value="$field.getId()" selected="selected">$field.getName()</option>
+                        #end
+                    </select>
+                </div>
+                #end
                 <div class="buttons-container form-footer">
                     <div class="buttons">
                         <input class="button submit" type="submit" name="add" value="$action.getText("common.words.yes")" accesskey="S" title="Press Alt+Shift+S to submit form"/>
-                        <input class="button submit" id="cancelButton" type="button" accesskey="`" title="Cancel (Alt+Shift + `)" name="Cancel" value="${action.getText('common.words.cancel')}" onclick="location.href='${baseUrl}/browse/${action.getIssueObject().getKey()}';"/>
+                        <a title="Press Alt+Shift+` to cancel" id="assign-issue-cancel" href="/jira/browse/$action.getIssueObject().getKey()" class="aui-button aui-button-link cancel" accesskey="`">Cancel</a>
                     </div>
                 </div>
             </div>
