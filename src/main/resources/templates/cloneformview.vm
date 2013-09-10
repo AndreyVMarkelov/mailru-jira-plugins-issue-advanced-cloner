@@ -29,7 +29,7 @@
                 </div>
                 <div class="field-group">
                     <label for="selectedGroups">$action.getText("advanced-cloner.newname")<span class="aui-icon icon-required"></span></label>
-                    <input type="text" class="text long-field" id="newName" name="newName" value="${newName}"/>
+                    <input type="text" class="text long-field" id="newName" name="newName" value="$textutils.htmlEncode($newName)"/>
                 </div>
                 <div class="field-group">
                     <label for="selectedGroups">$action.getText("advanced-cloner.issuecount")<span class="aui-icon icon-required"></span></label>
